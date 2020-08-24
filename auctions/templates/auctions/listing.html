@@ -1,0 +1,103 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-5">
+            <div class="p-2" style="border-right: 1px solid #c3c7c1;">
+                <img src="{{ listing.imageURL }}" alt="Image" width="450" height="auto">
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="form_name" value="formFour">
+                <input type="submit" class="btn btn-dark btn-sm mt-3" value="Add to Watchlist">
+            </form>
+        </div>
+        <div class="col-md-7">
+            <div class="p-2" >
+                <h3 class="strong">{{ listing.title }}</h3>
+                <p>{{ listing.description }}</p>
+                <br>
+                <p class="font-weight-bold">Starting Bid: <span style="color: green; font-size: 27px;">Rs. {{ listing.bid }}</span></p>
+                <p class="text-muted">Current Highest Bid: {{ highestBid }}</p>
+
+                <!-- PLACE BID -->
+                {% if listing.active == False %}
+                    <p class="alert alert-danger">Auction is closed</p>
+                {% endif %}
+
+                {% if listing.active and user.is_authenticated %}
+                    <form action="" autocomplete="off" class="form-inline" method="POST">
+                        {% csrf_token %}
+                        <div class="form-group row">
+                            <input type="hidden" name="form_name" value="formOne">
+                            <input class="form-control mb-2 ml-3 mr-sm-2 col-sm-3" type="number" name="your_bid" >
+                            <button type="submit" class="btn btn-primary mb-2">Place Bid</button>
+                        </div>
+                    </form>
+                {% endif %}
+
+                {% if messages %}
+                    
+                        {% for message in messages %}
+                            <p{% if message.tags %} class="alert alert-{{ message.tags }} ml-1 mt-2 col-md-5"{% endif %}>{{ message }}</p>
+                        {% endfor %}
+                    
+                {% endif %}
+
+                <!-- CLOSE AUCTION -->
+
+                {% if request.user == listing.author %}
+                    <form action="" method="POST" class="mt-3">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_name" value="formTwo">
+                        <input type="submit" class="btn btn-danger" value="Close Auction">
+                    </form>
+                {% endif %}
+
+                {% if request.user == listing.winner %}
+                    <p class="alert alert-success col-md-7">Congratulations!! You won the bid</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <br>
+
+    <!-- 
+        MORE INFORMATION SECTION
+    -->
+
+    <h3 class="mt-3">More Information</h3>
+    <ul class="mt-1">
+        <li>Listed By: {{ listing.author }} </li>
+        <li>Category: {{ listing.category }} </li>
+        <li>Listed On: {{ listing.date }}</li>
+    </ul>
+
+    <hr>
+    <h3>Comments</h3>
+
+    {% if request.user.is_authenticated %}
+        <form class="mb-3" method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <input type="hidden" name="form_name" value="formThree">
+                <textarea name="comment" class="form-control col-md-6 " placeholder="Add Comment..." rows="5"></textarea>
+            </div>
+            <input class="btn btn-primary mt-2" type="submit" value="Comment">
+        </form>
+    {% endif %}
+
+    {% for comment in comments %}
+        <div class="card mb-3">
+            <div class="card-header" style="background-color: #c3c7c1; height: 45px;">
+                <p>By <strong>{{ comment.commented_by }}</strong> on {{ comment.time |date:"D d M Y"}}</p>
+            </div>
+            <div class="card-body" style="font-size: 16px;">
+            <blockquote class="blockquote mb-0">
+                <p> {{ comment.text | linebreaks}} </p>
+            </blockquote>
+            </div>
+        </div>    
+    {% endfor %}
+{% endblock %}

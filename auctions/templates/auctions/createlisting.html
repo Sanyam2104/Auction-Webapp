@@ -1,0 +1,49 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}Create Listing{% endblock %}
+
+{% block body %}
+
+    <h2>Create Listing</h2>
+
+    {% if message %}
+        <div>{{ message }}</div>
+    {% endif %}
+
+    <div class="container">
+        <form action="{% url 'createlisting' %}" method="post" class="mb-3">
+            {% csrf_token %}
+    
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Title</label>
+                <input class="form-control col-6" autofocus type="text" name="title" placeholder="Title">
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Description</label>
+                <textarea class="form-control col-9" name="description" placeholder="Description" rows="4"></textarea>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Starting Bid</label>
+                <input class="form-control col-6" type="number" name="bid" placeholder="Starting Bid">
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Image URL</label>
+                <input class="form-control col-6" type="url" name="imageURL" placeholder="Image URL">
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Category</label>
+                <select class="form-control col-6" name="category" placeholder="Category">
+                    <option value="Fashion">Fashion</option>
+                    <option value="Toy">Toy</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Decoration">Decoration</option>
+                    <option value="Others">Others</option>
+                  </select>
+            </div>            
+            <input class="btn btn-primary mt-2" type="submit" value="Create">
+        </form>
+    </div>
+
+    <a href="{% url 'index' %}">Back to home page</a>
+
+{% endblock %}
